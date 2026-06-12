@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Educative Coding Streak Engine 🚀</title>
+  <meta name="description" content="A free interactive Educative coding streak tracker — complete lessons, build XP, and keep your developer learning momentum alive." />
+  <style>
+    :root{
+      --bg:#0f172a; --card:#1e293b; --line:#334155;
+      --text:#f1f5f9; --muted:#94a3b8; --accent:#facc15; --accent-2:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; font-family:Arial,Helvetica,sans-serif;
+      background:radial-gradient(1200px 600px at 50% -10%,#1b2740,transparent),var(--bg);
+      color:var(--text); display:flex; flex-direction:column; align-items:center; padding:24px;
+    }
+    h1{font-size:clamp(24px,5vw,38px); margin:32px 0 4px; text-align:center}
+    .sub{color:var(--muted); margin:0 0 28px; text-align:center; max-width:560px}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:28px; width:100%; max-width:440px; text-align:center;
+      box-shadow:0 20px 40px rgba(0,0,0,.35);
+    }
+    .stats{display:flex; gap:12px; margin-bottom:18px}
+    .stat{flex:1; background:#0f1a2e; border:1px solid var(--line); border-radius:12px; padding:16px 10px}
+    .stat .label{font-size:13px; color:var(--muted); margin-bottom:6px}
+    .stat .value{font-size:30px; font-weight:700}
+    .goal{
+      background:#0f1a2e; border:1px solid var(--line); border-radius:12px;
+      padding:14px; margin-bottom:18px; text-align:left;
+    }
+    .goal label{display:block; color:var(--muted); font-size:13px; margin-bottom:8px}
+    input{
+      width:100%; padding:12px; border-radius:10px; border:1px solid var(--line);
+      background:#111827; color:var(--text); font-size:15px;
+    }
+    button{
+      width:100%; padding:14px 20px; border:none; border-radius:10px; cursor:pointer;
+      font-size:16px; font-weight:700; color:#04210f; background:var(--accent-2);
+      transition:transform .05s ease, background .2s ease;
+    }
+    button:hover{background:#15803d}
+    button:active{transform:translateY(1px)}
+    .reset{margin-top:10px; background:transparent; color:var(--muted); font-weight:500; font-size:13px}
+    .reset:hover{background:transparent; color:var(--text)}
+    .msg{min-height:22px; color:var(--muted); font-size:14px; margin:14px 0 0}
+    .cta{
+      display:block; margin:18px auto 0; max-width:440px; width:100%; text-decoration:none;
+      background:var(--accent); color:#0b0b0b; font-weight:700; text-align:center;
+      padding:14px 18px; border-radius:10px;
+    }
+    .cta:hover{filter:brightness(1.05)}
+    footer{color:var(--muted); font-size:12px; margin-top:28px; max-width:560px; text-align:center}
+  </style>
+</head>
+<body>
+  <h1>🚀 Educative Coding Streak Engine</h1>
+  <p class="sub">Log one Educative lesson, project, or mock interview per day. Your streak, XP, and current learning goal are saved in your browser.</p>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><div class="label">🔥 Streak</div><div class="value" id="streak">0</div></div>
+      <div class="stat"><div class="label">⭐ XP</div><div class="value" id="xp">0</div></div>
+    </div>
+
+    <div class="goal">
+      <label for="goalInput">Current learning goal</label>
+      <input id="goalInput" placeholder="Example: Finish Grokking System Design" />
+    </div>
+
+    <button id="completeBtn">Complete Today's Educative Session</button>
+    <button class="reset" id="resetBtn">Reset progress</button>
+    <p class="msg" id="message"></p>
+  </div>
+
+  <a class="cta" href="https://www.educative.io/" target="_blank" rel="noopener sponsored">
+    🎁 Get Educative: Up to 79% off annual access + 7-day trial →
+  </a>
+
+  <footer>
+    Built for learners using Educative. This page contains an affiliate link — we may earn a
+    commission at no extra cost to you. Not affiliated with or endorsed by Educative.
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const read = (key, fallback) => {
+      const value = localStorage.getItem(key);
+      return value === null ? fallback : value;
+    };
+
+    let xp = parseInt(read("educative_xp", "0"), 10);
+    let streak = parseInt(read("educative_streak", "0"), 10);
+    let lastDate = read("educative_lastDate", null);
+
+    $("goalInput").value = read("educative_goal", "");
+
+    function render(){
+      $("xp").innerText = xp;
+      $("streak").innerText = streak;
+    }
+
+    function daysBetween(a, b){
+      const ms = new Date(b).setHours(0,0,0,0) - new Date(a).setHours(0,0,0,0);
+      return Math.round(ms / 86400000);
+    }
+
+    function save(){
+      localStorage.setItem("educative_xp", xp);
+      localStorage.setItem("educative_streak", streak);
+      localStorage.setItem("educative_lastDate", lastDate);
+      localStorage.setItem("educative_goal", $("goalInput").value.trim());
+    }
+
+    function completeSession(){
+      const today = new Date().toDateString();
+
+      if (lastDate === today) {
+        $("message").innerText = "Already logged today. Come back tomorrow to extend your streak.";
+        return;
+      }
+
+      if (!lastDate) {
+        streak = 1;
+      } else {
+        const diff = daysBetween(lastDate, today);
+        streak = diff === 1 ? streak + 1 : 1;
+      }
+
+      xp += 25;
+      lastDate = today;
+      save();
+      render();
+      $("message").innerText = "Nice work. One more Educative session logged.";
+    }
+
+    function resetProgress(){
+      if (!confirm("Reset your Educative streak, XP, and goal?")) return;
+      xp = 0;
+      streak = 0;
+      lastDate = null;
+      localStorage.removeItem("educative_xp");
+      localStorage.removeItem("educative_streak");
+      localStorage.removeItem("educative_lastDate");
+      localStorage.removeItem("educative_goal");
+      $("goalInput").value = "";
+      $("message").innerText = "Progress reset.";
+      render();
+    }
+
+    $("completeBtn").addEventListener("click", completeSession);
+    $("resetBtn").addEventListener("click", resetProgress);
+    $("goalInput").addEventListener("input", save);
+    render();
+  </script>
+</body>
+</html>
