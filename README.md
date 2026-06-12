@@ -1,4 +1,4 @@
-# Live Educative Coupon Code (2026) 50% Discount + Free Courses
+# Educative Coupon Code (2026) 50% Discount + Free Courses
 
 Find the [**active Educative coupon code**](https://www.educative.io/unlimited?aff=Bnm9&utm_source=hubg&utm_medium=ps&utm_campaign=affiliate ) below to get up to 50% discount on your annual subscription, saving you up to $1,299 based on the plan you choose, including Standard, Premium, and Premium Plus.
 
